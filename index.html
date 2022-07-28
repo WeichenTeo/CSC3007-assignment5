@@ -37,13 +37,48 @@
     $.get( "https://api.data.gov.sg/v1/environment/psi", function( data ) {
 
         let regions = data.region_metadata
-        for(let i = 0; i < regions.length; i++)
         let readings = data.items[0].readings
-        let twentyfourhourly = readings.psi_twenty_four_hourly
-        delete twentyfourhourly.national
-        console.log(twentyfourhourly)
+        let psi = readings.psi_twenty_four_hourly
+        let nationalPos
+        for(let i = 0; i < regions.length; i++){
+          region = regions[i]
+          if(region.name == "national"){
+            nationalPos = i
+            continue
+          }
+          region["psi"] = psi[region.name]
+        }
+        regions.splice(nationalPos, 1)
         console.log(regions)
-        $.each(readings,function(index,value){ 
+        $.each(regions,function(index,value){ 
+          let lat = value.label_location.latitude
+          let lng = value.label_location.longitude
+          let circle = L.circle([lat, lng], {
+              color: 'lime',
+              fillColor: 'lime',
+              fillOpacity: 0.5,
+              radius: 1500
+          }).addTo(map)
+          circle.bindPopup("Regions: " + value.name + "<br/>PSI: " + value.psi);
+          let icon = L.divIcon({
+            html: '<span>' + value.psi + '</span>',
+            className: 'circleTxt',
+            iconSize: [15, 15],
+          })
+          let marker = L.marker([lat, lng], {
+            icon: icon,
+          }).addTo(map)
+          // var size = radius * 2
+          // var style = 'style="width: ' + size + 'px; height: ' + size + 'px; border-width: ' + borderWidth + 'px;"'
+          // var iconSize = size + borderWidth * 2
+          // var icon = L.divIcon({
+          //   html: '<span class="' + 'circle ' + circleClass + '" ' + style + '>' + txt + '</span>',
+          //   className: '',
+          //   iconSize: [iconSize, iconSize],
+          // })
+          // var marker = L.marker(latLng, {
+          //   icon: icon,
+          // })
         });
       });
                     
