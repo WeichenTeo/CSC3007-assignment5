@@ -13,7 +13,12 @@
 <body>
   <div id="map"></div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.8.0/leaflet.js"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
   <script type="text/javascript">
+    const psiLevel = {
+
+    }
     let tiles = new L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
       detectRetina: true,
       maxZoom: 18,
@@ -28,6 +33,19 @@
         maxBounds: L.latLngBounds(L.latLng(1.1, 103.5), L.latLng(1.5, 104.3))
       })
       .addLayer(tiles);
+
+    $.get( "https://api.data.gov.sg/v1/environment/psi", function( data ) {
+
+        let regions = data.region_metadata
+        for(let i = 0; i < regions.length; i++)
+        let readings = data.items[0].readings
+        let twentyfourhourly = readings.psi_twenty_four_hourly
+        delete twentyfourhourly.national
+        console.log(twentyfourhourly)
+        console.log(regions)
+        $.each(readings,function(index,value){ 
+        });
+      });
                     
   </script>
 </body>
